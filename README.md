@@ -75,9 +75,30 @@ If for some reason you do not want the class to compensate for files that are
 not already UTF-8 add a third argument of FALSE
 
 `$reqname` is the name of the script the web page is requesting, e.g.
-`foo-73484273.js`
+`bar-73484273.js`
 
-`$scriptdir` is the directory on the server filesystem where `foo.js` resides,
+`$scriptdir` is the directory on the server filesystem where `bar.js` resides,
 e.g. `/srv/mywebsite/js/`
 
 You must use a trailing slash with the `$scriptdir`
+
+To serve the file, call the `sendResponse()` public function:
+
+    $foo->sendResponse();
+    
+The class with then send an HTTP response to the client.
+
+NOTES
+-----
+
+When the `$reqname` does not contain a timestamp at the end of the file name
+(but before extension) the file will not be minified when served.
+
+When `$reqname` does contain a timestamp at the end of the file name, the file
+the class actually looks for is without the timestamp. For example:
+
+    $foo = new scriptCache('bar-73484273.js', '/srv/mywebsite/js/');
+    
+The class will look for `/srv/mywebsite/js/bar.js` and will return a 404 header
+if it can not find it. If it does find it, it will minify the contents when
+sending the content to the requesting client.
