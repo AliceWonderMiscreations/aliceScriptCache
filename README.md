@@ -40,3 +40,44 @@ will take place:
   it already has is current, the class will handle the request and check so it
   can send a 304 Not Modified header if the client has the current version, and
   send the current version of the file if the client has an outdated copy.
+
+Requirements
+------------
+
+You need a reasonably current version of PHP. I suspect it will work with all
+currently supported versions, but I have only tested with PHP 5.6.x branch.
+
+You will need the JSqueeze class by Nicolas Grekas. That class is what actually
+does the JavaScript minification. You can get it from
+https://github.com/nicolas-grekas/JSqueeze/blob/master/class/JSqueeze.php
+
+You will need to write a wrapper that intercepts server requests to JS/CSS/TXT
+files and uses this class to handle the request. If you are using the Apache
+web server, mod_rewrite is good for intercepting the request and sending the
+request to a wrapper.
+
+It is recommended that you have the php multi-byte mb* string functions
+available to PHP. In most cases they will never be needed, but no PHP install
+should be without them anyway, and if you use the class to serve text files,
+the odds that you will need them go up.
+
+Usage
+-----
+
+The class only has two public functions. The first initiates the class, the
+second serves the file.
+
+To initiate the class:
+
+    $foo = new scriptCache($reqname, $scriptdir);
+
+If for some reason you do not want the class to compensate for files that are
+not already UTF-8 add a third argument of FALSE
+
+`$reqname` is the name of the script the web page is requesting, e.g.
+`foo-73484273.js`
+
+`$scriptdir` is the directory on the server filesystem where `foo.js` resides,
+e.g. `/srv/mywebsite/js/`
+
+You must use a trailing slash with the `$scriptdir`
